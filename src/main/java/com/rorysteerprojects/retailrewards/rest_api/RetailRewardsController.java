@@ -1,6 +1,6 @@
 package com.rorysteerprojects.retailrewards.rest_api;
 
-import com.rorysteerprojects.config.ResourceLookup;
+import com.rorysteerprojects.retailrewards.config.ResourceLookup;
 import com.rorysteerprojects.retailrewards.api.CustomerTransactionsDTO;
 import com.rorysteerprojects.retailrewards.api.RewardsResultDTO;
 import com.rorysteerprojects.retailrewards.application_services.RetailRewardsService;

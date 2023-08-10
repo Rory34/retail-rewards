@@ -1,4 +1,4 @@
-package com.rorysteerprojects.config;
+package com.rorysteerprojects.retailrewards.config;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
