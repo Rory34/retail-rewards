@@ -29,4 +29,14 @@ public class RetailTransactionDTO {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "RetailTransaction{" +
+                "id='" + id + '\'' +
+                ", date='" + date + '\'' +
+                ", customerId='" + customerId + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }
