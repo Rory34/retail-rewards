@@ -17,9 +17,8 @@ public class CustomerParser {
 
         List<String> errors = customers.stream()
                 .filter(this::isCustomerIdInvalid)
-                .map(customer -> ResourceLookup.getMessage("res_invalidCustomerId") + customer.getName())
+                .map(customer -> customer.toString() + " : " + ResourceLookup.getMessage("res_invalidCustomerId"))
                 .toList();
-
 
         return errors.isEmpty() ?
                 new CustomerParserResult(convertCustomers(customers), Collections.emptyList()) :

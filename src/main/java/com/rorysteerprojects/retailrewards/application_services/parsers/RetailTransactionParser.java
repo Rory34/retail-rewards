@@ -28,7 +28,7 @@ public class RetailTransactionParser {
 
     private List<String> validateTransactions(List<RetailTransactionDTO> transactions, List<Customer> customers) {
         Map<Integer, Customer> customersById = customers.stream()
-                .collect(Collectors.toMap(Customer::getId, customer -> customer));
+                .collect(Collectors.toMap(Customer::id, customer -> customer));
         List<String> errors = transactions.stream()
                 .map(transaction -> validateTransaction(transaction, customersById))
                 .toList()

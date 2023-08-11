@@ -15,8 +15,8 @@ class CustomerParserTest {
        var parser = new CustomerParser();
        var result = parser.parserCustomers(Collections.emptyList());
 
-       assert(result.customers()).isEmpty();
-       assert(result.errors()).isEmpty();
+       assertTrue(result.customers().isEmpty());
+       assertTrue(result.errors().isEmpty());
     }
 
     @Test
@@ -25,10 +25,10 @@ class CustomerParserTest {
         var customers = List.of(new CustomerDTO("101", "Customer 1"));
         var result = parser.parserCustomers(customers);
 
-        assert(result.errors()).isEmpty();
+        assertTrue(result.errors().isEmpty());
         assertEquals(1, result.customers().size());
-        assertEquals(101, result.customers().get(0).getId());
-        assertEquals("Customer 1", result.customers().get(0).getName());
+        assertEquals(101, result.customers().get(0).id());
+        assertEquals("Customer 1", result.customers().get(0).name());
     }
 
     @Test
@@ -38,14 +38,14 @@ class CustomerParserTest {
                 new CustomerDTO("102", "Customer 2"));
         var result = parser.parserCustomers(customers);
 
-        assert(result.errors()).isEmpty();
+        assertTrue(result.errors().isEmpty());
         assertEquals(2, result.customers().size());
-        var customerResult = result.customers().stream().filter(c -> c.getId() == 101).findFirst();
-        assert customerResult.isPresent();
-        assertEquals("Customer 1", customerResult.get().getName());
-        customerResult = result.customers().stream().filter(c -> c.getId() == 102).findFirst();
-        assert customerResult.isPresent();
-        assertEquals("Customer 2", customerResult.get().getName());
+        var customerResult = result.customers().stream().filter(c -> c.id() == 101).findFirst();
+        assertTrue(customerResult.isPresent());
+        assertEquals("Customer 1", customerResult.get().name());
+        customerResult = result.customers().stream().filter(c -> c.id() == 102).findFirst();
+        assertTrue(customerResult.isPresent());
+        assertEquals("Customer 2", customerResult.get().name());
     }
     @Test
     public void testOneInvalidCustomerInListConvertedToNoCustomersAndOneError() {
@@ -53,9 +53,9 @@ class CustomerParserTest {
         var customers = List.of(new CustomerDTO("badId", "Customer 1"));
         var result = parser.parserCustomers(customers);
 
-        assert(result.customers()).isEmpty();
+        assertTrue(result.customers().isEmpty());
         assertEquals(1, result.errors().size());
-        assertEquals("Invalid customer id for customer name: Customer 1", result.errors().get(0));
+        assertEquals(customers.get(0).toString() + " : has an invalid customer id.", result.errors().get(0));
     }
 
     @Test
@@ -67,10 +67,10 @@ class CustomerParserTest {
                 new CustomerDTO(null, "Customer 4"));
         var result = parser.parserCustomers(customers);
 
-        assert(result.customers()).isEmpty();
+        assertTrue(result.customers().isEmpty());
         assertEquals(2, result.errors().size());
-        assertEquals("Invalid customer id for customer name: Customer 2", result.errors().get(0));
-        assertEquals("Invalid customer id for customer name: Customer 4", result.errors().get(1));
+        assertEquals(customers.get(1).toString() + " : has an invalid customer id.", result.errors().get(0));
+        assertEquals(customers.get(3).toString() + " : has an invalid customer id.", result.errors().get(1));
     }
     @Test
     public void testAllTypesOfInvalidCustomers() {
@@ -81,10 +81,16 @@ class CustomerParserTest {
                 new CustomerDTO(null, null));
         var result = parser.parserCustomers(customers);
 
-        assert(result.customers()).isEmpty();
+        assertTrue(result.customers().isEmpty());
         assertEquals(3, result.errors().size());
-        assertEquals("Invalid customer id for customer name: Customer 2", result.errors().get(0));
-        assertEquals("Invalid customer id for customer name: Customer 4", result.errors().get(1));
-        assertEquals("Invalid customer id for customer name: null", result.errors().get(2));
+        assertTrue(result.errors()
+                .stream()
+                .anyMatch(e -> e.equals(customers.get(1).toString() + " : has an invalid customer id.")));
+        assertTrue(result.errors()
+                .stream()
+                .anyMatch(e -> e.equals(customers.get(2).toString() + " : has an invalid customer id.")));
+        assertTrue(result.errors()
+                .stream()
+                .anyMatch(e -> e.equals(customers.get(3).toString() + " : has an invalid customer id.")));
     }
 }
