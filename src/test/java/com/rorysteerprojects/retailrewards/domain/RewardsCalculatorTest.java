@@ -137,4 +137,45 @@ class RewardsCalculatorTest {
         assertEquals(0, rewardsResult.get().threeMonthTotal());
     }
 
+    @Test
+    public void tesThresholds() {
+        var transactions = List.of(
+                new RetailTransaction(1001, LocalDate.of(2023, 6, 3), 100, 50.99),
+                new RetailTransaction(1002, LocalDate.of(2023, 6, 30), 101, 51),
+                new RetailTransaction(1003, LocalDate.of(2023, 6, 30), 102, 100.99),
+                new RetailTransaction(1004, LocalDate.of(2023, 6, 30), 103, 101)
+        );
+
+        var result = rewardsCalculator.calculate(transactions);
+
+        assertEquals(4, result.size());
+        var rewardsResult = result.stream().filter(r -> r.customerId() == 100).findFirst();
+        assertTrue(rewardsResult.isPresent());
+        assertEquals(0, rewardsResult.get().monthlyTotals()[0]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[1]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[2]);
+        assertEquals(0, rewardsResult.get().threeMonthTotal());
+
+        rewardsResult = result.stream().filter(r -> r.customerId() == 101).findFirst();
+        assertTrue(rewardsResult.isPresent());
+        assertEquals(1, rewardsResult.get().monthlyTotals()[0]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[1]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[2]);
+        assertEquals(1, rewardsResult.get().threeMonthTotal());
+
+        rewardsResult = result.stream().filter(r -> r.customerId() == 102).findFirst();
+        assertTrue(rewardsResult.isPresent());
+        assertEquals(50, rewardsResult.get().monthlyTotals()[0]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[1]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[2]);
+        assertEquals(50, rewardsResult.get().threeMonthTotal());
+
+        rewardsResult = result.stream().filter(r -> r.customerId() == 103).findFirst();
+        assertTrue(rewardsResult.isPresent());
+        assertEquals(52, rewardsResult.get().monthlyTotals()[0]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[1]);
+        assertEquals(0, rewardsResult.get().monthlyTotals()[2]);
+        assertEquals(52, rewardsResult.get().threeMonthTotal());
+    }
+
 }

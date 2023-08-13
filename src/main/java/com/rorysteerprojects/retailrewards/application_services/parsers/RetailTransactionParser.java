@@ -86,15 +86,17 @@ public class RetailTransactionParser {
                 Double.parseDouble(transaction.getValue()));
     }
 
-    static Predicate<RetailTransactionDTO> isInvalidTransactionId = transaction -> {
+    private static final Predicate<String> isInvalidInteger = integerString -> {
         try {
-            Integer.parseInt(transaction.getId());
+            Integer.parseInt(integerString);
             return false;
         } catch (Exception e) {
             return true;
         }
     };
-    static Predicate<RetailTransactionDTO> isInvalidDate = transaction -> {
+    private static final Predicate<RetailTransactionDTO> isInvalidTransactionId = transaction ->
+            isInvalidInteger.test(transaction.getId());;
+    private static final Predicate<RetailTransactionDTO> isInvalidDate = transaction -> {
         try {
             LocalDate.parse(transaction.getDate());
             return false;
@@ -102,15 +104,9 @@ public class RetailTransactionParser {
             return true;
         }
     };
-    static Predicate<RetailTransactionDTO> isInvalidCustomerId = transaction -> {
-        try {
-            Integer.parseInt(transaction.getCustomerId());
-            return false;
-        } catch (Exception e) {
-            return true;
-        }
-    };
-    static Predicate<RetailTransactionDTO> isInvalidValue = transaction -> {
+    private static final Predicate<RetailTransactionDTO> isInvalidCustomerId = transaction ->
+            isInvalidInteger.test(transaction.getCustomerId());
+    private static final Predicate<RetailTransactionDTO> isInvalidValue = transaction -> {
         try {
             Double.parseDouble(transaction.getValue());
             return false;
@@ -118,7 +114,7 @@ public class RetailTransactionParser {
             return true;
         }
     };
-    static Predicate<RetailTransactionDTO> isNegativeValue = transaction ->
+    private static final Predicate<RetailTransactionDTO> isNegativeValue = transaction ->
             !isInvalidValue.test(transaction) && Double.parseDouble(transaction.getValue()) < 0;
     private static final Map<Predicate<RetailTransactionDTO>, String> validators = Map.of(
             isInvalidTransactionId, "res_transactionHasInvalidId",

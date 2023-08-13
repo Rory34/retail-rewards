@@ -15,7 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -29,14 +29,18 @@ class RetailRewardsControllerTest {
     RetailRewardsService retailRewardsService;
 
     @Test
-    public void testNoBody() {
+    public void testNoRequestBody() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes((request)));
 
         ResponseEntity<RewardsResultDTO> responseEntity = retailRewardsController.calculateRewards(null);
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(400);
-        assertThat(responseEntity.getBody().getErrors().get(0)).isEqualTo("Request Body must contain both a customer list and a transaction list");
-
+        assertEquals(400, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(responseEntity.getBody().getErrors());
+        assertEquals(1, responseEntity.getBody().getErrors().size());
+        assertTrue(responseEntity.getBody().getErrors()
+                .stream()
+                .anyMatch(e -> e.equals("Request Body must contain both a customer list and a transaction list")));
     }
     @Test
     public void testNoCustomerList() {
@@ -46,8 +50,13 @@ class RetailRewardsControllerTest {
         ResponseEntity<RewardsResultDTO> responseEntity = retailRewardsController.calculateRewards(
                 new CustomerTransactionsDTO(null, Collections.emptyList()));
 
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(400);
-        assertThat(responseEntity.getBody().getErrors().get(0)).isEqualTo("Request Body must contain both a customer list and a transaction list");
+        assertEquals(400, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(responseEntity.getBody().getErrors());
+        assertEquals(1, responseEntity.getBody().getErrors().size());
+        assertTrue(responseEntity.getBody().getErrors()
+                .stream()
+                .anyMatch(e -> e.equals("Request Body must contain both a customer list and a transaction list")));
 
     }
     @Test
@@ -58,8 +67,13 @@ class RetailRewardsControllerTest {
         ResponseEntity<RewardsResultDTO> responseEntity = retailRewardsController.calculateRewards(
                 new CustomerTransactionsDTO(Collections.emptyList(), null));
 
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(400);
-        assertThat(responseEntity.getBody().getErrors().get(0)).isEqualTo("Request Body must contain both a customer list and a transaction list");
+        assertEquals(400, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(responseEntity.getBody().getErrors());
+        assertEquals(1, responseEntity.getBody().getErrors().size());
+        assertTrue(responseEntity.getBody().getErrors()
+                .stream()
+                .anyMatch(e -> e.equals("Request Body must contain both a customer list and a transaction list")));
 
     }
 
@@ -72,9 +86,13 @@ class RetailRewardsControllerTest {
                 new CustomerTransactionsDTO(Collections.emptyList(), List.of(new RetailTransactionDTO("1", "2023-08-09", "0", "0")))
         );
 
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(400);
-
-        assertThat(responseEntity.getBody().getErrors().get(0)).isEqualTo("Request Body must contain both a customer list and a transaction list");
+        assertEquals(400, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertNotNull(responseEntity.getBody().getErrors());
+        assertEquals(1, responseEntity.getBody().getErrors().size());
+        assertTrue(responseEntity.getBody().getErrors()
+                .stream()
+                .anyMatch(e -> e.equals("Request Body must contain both a customer list and a transaction list")));
     }
 
     @Test
@@ -90,9 +108,14 @@ class RetailRewardsControllerTest {
                 new CustomerTransactionsDTO(List.of(new CustomerDTO("1", "name")), List.of(new RetailTransactionDTO("1", "2023-08-09", "0", "0")))
         );
 
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(422);
-        assert(responseEntity.getBody().getCustomerSummaries().isEmpty());
-        assertThat(responseEntity.getBody().getErrors().get(0)).isEqualTo(errorMessage);
+        assertEquals(422, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertTrue(responseEntity.getBody().getCustomerSummaries().isEmpty());
+        assertNotNull(responseEntity.getBody().getErrors());
+        assertEquals(1, responseEntity.getBody().getErrors().size());
+        assertTrue(responseEntity.getBody().getErrors()
+                .stream()
+                .anyMatch(e -> e.equals(errorMessage)));
     }
 
     @Test
@@ -108,8 +131,12 @@ class RetailRewardsControllerTest {
                 new CustomerTransactionsDTO(List.of(new CustomerDTO("1", "name")), List.of(new RetailTransactionDTO("1", "2023-08-09", "0", "0")))
         );
 
-        assertThat(responseEntity.getStatusCode().value()).isEqualTo(200);
-        assertThat(responseEntity.getBody().getCustomerSummaries().get(0)).isEqualTo(customerSummary);
-        assert(responseEntity.getBody().getErrors().isEmpty());
+        assertEquals(200, responseEntity.getStatusCode().value());
+        assertNotNull(responseEntity.getBody());
+        assertEquals(1, responseEntity.getBody().getCustomerSummaries().size());
+        assertTrue(responseEntity.getBody().getCustomerSummaries()
+                .stream()
+                .anyMatch(cs -> cs.getCustomerId() == customerSummary.getCustomerId()));
+        assertTrue(responseEntity.getBody().getErrors().isEmpty());
     }
 }
